@@ -12,7 +12,7 @@ token_param=""
 keep_paging=true
 page_count=0
  
-until [ "$keep_paging" == false ] || [ "$page_count" -eq 2 ]; do
+until [ "$keep_paging" == false ] || [ "$page_count" -eq 100 ]; do
   if [ "$next_token" != null ]
 		then
 	    token_param="--starting-token ${next_token}"
@@ -38,5 +38,4 @@ until [ "$keep_paging" == false ] || [ "$page_count" -eq 2 ]; do
 	fi
 
 	let "page_count++"
-	# echo "Page: ${page_count}"
 done

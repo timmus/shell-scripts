@@ -1,41 +1,54 @@
 #!/usr/bin/env bash
 
-read -r -d '' jq_filter <<-EOT
-  { NextToken: .NextToken, Parameters: [.Parameters[] |
-  { Name: .Name, Value: .Value }] }
-EOT
 
-profile_name="prod-locbox"
+function print_system_parameters {
+	read -r -d '' jq_filter <<-EOT
+	  { NextToken: .NextToken, Parameters: [.Parameters[] |
+	  { Name: .Name, Value: .Value }] }
+	EOT
 
-next_token=null
-token_param=""
-keep_paging=true
-page_count=0
+	profile_name=$1
+	region=$2
 
-until [ "$keep_paging" == false ] || [ "$page_count" -eq 100 ]; do
-  if [ "$next_token" != null ]
-    then
-      token_param="--starting-token ${next_token}"
-  fi
+	next_token=null
+	token_param=""
+	keep_paging=true
+	page_count=0
 
-  response=$(aws ssm get-parameters-by-path \
-    --path "/" \
-    --recursive \
-    --with-decryption \
-    --output json \
-    --profile ${profile_name} \
-    --region us-west-2 \
-    --max-items 20 \
-    ${token_param})
+	echo "#################################### ${profile_name} ${region} ####################################"
 
-  echo "$response" | jq -r "$jq_filter"
+	until [ "$keep_paging" == false ] || [ "$page_count" -eq 100 ]; do
+	  if [ "$next_token" != null ]
+	    then
+	      token_param="--starting-token ${next_token}"
+	  fi
 
-  next_token=$(echo "$response" | jq -r ".NextToken")
+	  response=$(aws ssm get-parameters-by-path \
+	    --path "/" \
+	    --recursive \
+	    --with-decryption \
+	    --output json \
+	    --profile ${profile_name} \
+	    --region ${region} \
+	    --max-items 20 \
+	    ${token_param})
 
-  if [ "$next_token" == null ]
-    then
-      keep_paging=false
-  fi
+	  echo "$response" | jq -r "$jq_filter"
 
-  ((page_count++))
-done
+	  next_token=$(echo "$response" | jq -r ".NextToken")
+
+	  if [ "$next_token" == null ]
+	    then
+	      keep_paging=false
+	  fi
+
+	  ((page_count++))
+	done
+}
+
+print_system_parameters prod-locbox us-east-1
+print_system_parameters prod-locbox us-east-2
+print_system_parameters prod-locbox us-west-1
+print_system_parameters prod-locbox us-west-2
+
+

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 read -r -d '' jq_filter <<-EOT
-	{ NextToken: .NextToken, Parameters: [.Parameters[] |
-	{ Name: .Name, Value: .Value }] }
+  { NextToken: .NextToken, Parameters: [.Parameters[] |
+  { Name: .Name, Value: .Value }] }
 EOT
 
 profile_name="prod-locbox"

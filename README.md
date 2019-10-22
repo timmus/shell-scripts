@@ -19,5 +19,6 @@ You need to make the shell scripts executable.
 
 - **/aws/read-parameter-store.sh**
   - [x] I needed to track down all of the application config we have stored in AWS.
+  - [x] I wanted to learn shell scripting fundamentals like variables, looping, and conditionals
   - [x] I wanted to learn how to handle paging in the aws cli so I included the max-items param to trigger it.
   - [ ] I also want to search across all regions so that is coming soon.

@@ -51,4 +51,10 @@ print_system_parameters prod-locbox us-east-2
 print_system_parameters prod-locbox us-west-1
 print_system_parameters prod-locbox us-west-2
 
+print_system_parameters prod-spotley us-east-1
+print_system_parameters prod-spotley us-east-2
+print_system_parameters prod-spotley us-west-1
+print_system_parameters prod-spotley us-west-2
+
+
 

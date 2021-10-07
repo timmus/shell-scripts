@@ -7,15 +7,17 @@ function copy_system_parameters {
 	  { Name: .Name, Value: .Value }] }
 	EOT
 
-	profile_name=$1
-	region=$2
+	from_profile=$1
+	from_region=$2
+	to_profile=$3
+	to_region=$4
 
 	next_token=null
 	token_param=""
 	keep_paging=true
 	page_count=0
 
-	echo "#################################### ${profile_name} ${region} ####################################"
+	echo "#################################### ${from_profile} ${from_region} - ${to_profile} ${to_region} ####################################"
 
 	until [ "$keep_paging" == false ] || [ "$page_count" -eq 100 ]; do
 	  if [ "$next_token" != null ]
@@ -28,10 +30,10 @@ function copy_system_parameters {
 	    --recursive \
 	    --with-decryption \
 	    --output json \
-	    --profile ${profile_name} \
-	    --region ${region} \
+	    --profile "${from_profile}" \
+	    --region "${from_region}" \
 	    --max-items 20 \
-	    ${token_param})
+	    "${token_param}")
 
 	  x=$(echo "$response" | jq -r "$jq_filter")
 
@@ -41,7 +43,7 @@ function copy_system_parameters {
         name=$(echo $row | base64 --decode | jq -r '.Name')
         value=$(echo $row | base64 --decode | jq -r '.Value')
 
-        aws ssm put-parameter --profile beakon-staging --region us-west-2 --no-cli-pager \
+        aws ssm put-parameter --profile "${to_profile}" --region "${to_region}" --no-cli-pager \
           --name "${name}" --value "${value}" --type String --overwrite
     done
 
@@ -56,8 +58,9 @@ function copy_system_parameters {
 	done
 }
 
-copy_system_parameters hownd-staging us-west-1
-copy_system_parameters hownd-staging us-west-2
+# copy all the params from one region to another
+copy_system_parameters hownd-staging us-west-1 hownd-staging us-west-2
+
 
 
 

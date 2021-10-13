@@ -33,7 +33,7 @@ function copy_system_parameters {
 	    --profile "${from_profile}" \
 	    --region "${from_region}" \
 	    --max-items 20 \
-	    "${token_param}")
+	    $token_param)
 
 	  x=$(echo "$response" | jq -r "$jq_filter")
 
